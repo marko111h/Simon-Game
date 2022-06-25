@@ -7,6 +7,8 @@ let compTurn;
 let intervalId;
 let noise = true;
 let on = true;
+let win;
+let nextRound = 3;
 
 const topLeft = document.querySelector("#topleft");
 const topRight = document.querySelector("#topright");
@@ -16,12 +18,13 @@ const bottomRight = document.querySelector("#bottomright");
 const startButton = document.querySelector("#start");
 
 startButton.addEventListener("click", (event) => {
-  if (on) {
+  if (on || win) {
     play();
   }
 });
 
 function play() {
+  win = false;
   order = [];
   playerOrder = [];
   flash = 0;
@@ -33,7 +36,7 @@ function play() {
   }
   compTurn = true;
 
-  intervalId = setInterval(gameTurn, 800);
+  intervalId = setInterval(gameTurn, 800); //800);
 }
 
 function gameTurn() {
@@ -54,7 +57,7 @@ function gameTurn() {
       if (order[flash] == 3) three();
       if (order[flash] == 4) four();
       flash++;
-    }, 200);
+    }, 200); //200
   }
 }
 
@@ -107,4 +110,97 @@ function flashColor() {
   topRight.style.backgroundColor = "tomato";
   bottomLeft.style.backgroundColor = "yellow";
   bottomRight.style.backgroundColor = "lightskyblue";
+}
+
+topLeft.addEventListener("click", (event) => {
+  if (on) {
+    playerOrder.push(1);
+    check();
+    one();
+    if (!win) {
+      setTimeout(() => {
+        clearColor();
+      }, 300); //300
+    }
+  }
+});
+
+topRight.addEventListener("click", (event) => {
+  if (on) {
+    playerOrder.push(2);
+    check();
+    two();
+    if (!win) {
+      setTimeout(() => {
+        clearColor();
+      }, 300); //300
+    }
+  }
+});
+
+bottomLeft.addEventListener("click", (event) => {
+  if (on) {
+    playerOrder.push(3);
+    check();
+    three();
+    if (!win) {
+      setTimeout(() => {
+        clearColor();
+      }, 300); //300
+    }
+  }
+});
+
+bottomRight.addEventListener("click", (event) => {
+  if (on) {
+    playerOrder.push(4);
+    check();
+    four();
+    if (!win) {
+      setTimeout(() => {
+        clearColor();
+      }, 300); //300
+    }
+  }
+});
+function check() {
+  if (playerOrder[playerOrder.length - 1] !== order[playerOrder.length - 1])
+    good = false;
+
+  if (playerOrder.length == nextRound && good) {
+    winGame();
+  }
+  if (good == false) {
+    flashColor();
+    alert("try again");
+    setTimeout(() => {
+      clearColor();
+      compTurn = true;
+      flash = 0;
+      playerOrder = [];
+      good = true;
+      intervalId = setInterval(gameTurn, 900); //900
+    }, 500); //800
+    noise = false;
+  }
+
+  if (turn == playerOrder.length && good && !win) {
+    turn++;
+    playerOrder = [];
+    compTurn = true;
+    flash = 0;
+    intervalId = setInterval(gameTurn, 800); //800
+  }
+}
+function winGame() {
+  flashColor();
+  on = false;
+  alert("WIN");
+  alert("next level");
+  nextRound++;
+  win = true;
+  if (nextRound === 6) {
+    alert("WIN GAME");
+    nextRound = 3;
+  }
 }
